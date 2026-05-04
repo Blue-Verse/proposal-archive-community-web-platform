@@ -121,4 +121,146 @@ job:
 
 ## 6. 최종 산출물
 
-(8단계 완료 후 추가 예정)
+### 6.1 제안서 사이트 URL
+https://proposal-router.claude-ai-b27.workers.dev/proposal-archive-community-web-platform/
+
+### 6.2 지원 금액 (복사용)
+```
+18,000,000
+```
+
+### 6.3 지원 기간 (복사용)
+```
+90
+```
+
+### 6.4 클라이언트 질문 답변
+
+**Q: 유사한 프로젝트를 수행한 경험이 있다면 무엇입니까? (포트폴리오 첨부 필수)**
+
+본 프로젝트와 가장 유사한 수행 경험은 다음 3건입니다.
+
+▶ 전자결재 SaaS (B2B 기업용 / 2026.01–2026.03)
+- PR 504건, 50+ 페이지, 120-150 API 엔드포인트, 34 엔티티, 7 사용자 역할, 6계층 보안
+- 본 프로젝트와 유사점: 어드민 페이지 + DB 대시보드, 사용자 권한별(RBAC + CASL) 화면 분리, Lexical 리치 에디터 기반 콘텐츠 작성 — 본 프로젝트의 CMS·권한별 게시판·관리자 페이지에 그대로 적용 가능
+- 기술 스택: NestJS 10, Next.js 13, TypeScript, MySQL 8, Lexical+Yjs, CASL, Docker
+
+▶ VC 펀드 관리 플랫폼 (핀테크 포탈 / 2023.11–2024.12)
+- PR 1,652건, 50+ 페이지, 22 도메인 모듈, 80+ 엔티티, 200-300+ API 엔드포인트
+- 본 프로젝트와 유사점: 대규모 콘텐츠 운영(80+ 엔티티 / 200+ API), 사용자 그룹별 포탈 분리(GP/LP/스타트업), 회원 + 활동 로그 + 마이페이지, 5계층 보안·민감정보 처리 — 본 프로젝트의 대규모 CMS·권한별 회원 관리·보안 요구사항 모두 검증
+- 기술 스택: Next.js 13, NestJS 10, TypeScript, MySQL, Lexical+Yjs, AWS
+
+▶ 시니어 주간보호 관리 플랫폼 (B2B SaaS / 헬스케어 / 2025)
+- 133K+ LOC, 140+ API 엔드포인트, 6 플랫폼, 멀티테넌트 아키텍처
+- 본 프로젝트와 유사점: 시설(권한 그룹) 단위 권한 분리, 반응형 웹 + 어드민 분리 구조, 인앱 + 이메일 통합 알림, AWS CDK 기반 안정 배포
+- 기술 스택: NestJS, Next.js, TypeScript, MySQL, AWS CDK, Docker
+
+상세 케이스 스터디는 제안서 사이트의 "유사 프로젝트 경험" 페이지에서 확인 가능합니다.
+▶ 제안서 상세 페이지: https://proposal-router.claude-ai-b27.workers.dev/proposal-archive-community-web-platform/
+▶ 위시켓 포트폴리오: https://www.wishket.com/partners/p/blueverse1/
+
+### 6.5 지원 내용 (복사용)
+
+```
+안녕하세요, 노코드 프로토타입 기반 정보 아카이브 및 커뮤니티 웹 플랫폼 프로젝트에 지원합니다.
+
+본 프로젝트에 대한 상세 제안서(견적서, 공수계산서, PRD, 일정, 포트폴리오)를 별도 페이지로 준비하였습니다. 아래 링크에서 확인해 주시면 감사하겠습니다.
+▶ 제안서 상세 페이지: https://proposal-router.claude-ai-b27.workers.dev/proposal-archive-community-web-platform/
+▶ 위시켓 포트폴리오: https://www.wishket.com/partners/p/blueverse1/
+
+---
+
+<프로젝트 진행 제안>
+
+■ 프로젝트 분석
+- 노코드 프로토타입의 시각적 구조와 기획 로직을 그대로 계승하면서, 성능·보안·확장성 한계를 해소하는 커스텀 웹 플랫폼 전환이 핵심 과업으로 판단됩니다.
+- 정보 아카이브(CMS) + 권한별 커뮤니티 + 회원 시스템(이메일 + 카카오/네이버/구글 SSO) + 어드민 페이지 + DB 대시보드를 통합 구축하며, SEO 최적화는 Next.js App Router의 SSR/SSG/ISR로 정책 키워드 검색 시 상위 노출 기반을 확보합니다.
+- 차후 광고 관리 시스템(ADMS) 및 전문가/사용자 매칭 시스템을 모듈로 즉시 추가할 수 있도록 NestJS 도메인 모듈 분리 아키텍처로 설계합니다.
+
+■ 작업 일정 (총 90일)
+
+[Phase 1] 기획/설계 — Day 1–9
+- 노코드 프로토타입 분석, 화면 흐름·데이터 모델 도출, PRD·ERD·API 명세·권한 매트릭스 작성
+
+[Phase 2] UI/UX 디자인 — Day 10–22
+- 디자인 시스템 정의, 사용자 화면(약 18개) + 어드민 화면(약 12개) 반응형 PC/MO Figma 디자인
+
+[Phase 3] 프론트엔드 개발 — Day 23–45
+- Next.js App Router 기반 사용자 화면, SSR/SSG로 SEO 최적화, 카테고리 아카이브·커뮤니티·마이페이지 구현
+
+[Phase 4] 백엔드 개발 — Day 46–70
+- NestJS 모듈 기반 인증(소셜 SSO 포함)·RBAC·CMS·커뮤니티·어드민 API 일체 개발
+
+[Phase 5] 통합 + 어드민 — Day 71–80
+- FE-BE 통합, 어드민 페이지(대시보드·회원/게시물 관리·CMS) 완성, S3 미디어 업로드 통합
+
+[Phase 6] QA/SEO 검증/배포 — Day 81–90
+- E2E 테스트, SEO 검증, 보안 점검, 성능 튜닝, AWS 운영 환경 배포, 운영 매뉴얼·SEO 보고서 인계
+
+■ 마일스톤 및 산출물
+- M1 (Day 9): PRD·ERD·API 명세서 승인
+- M2 (Day 22): Figma 사용자/어드민 화면 승인
+- M3 (Day 45): 사용자 화면 동작 데모
+- M4 (Day 70): API 통합 테스트 통과
+- M5 (Day 80): 어드민 + 콘텐츠 업로드 시연
+- M6 (Day 90): 운영 배포 + 산출물 일체 인계 (소스 코드, API 문서, ERD, Figma 원본, 운영 매뉴얼, SEO 최적화 보고서)
+
+■ 미팅 시 협의 필요 사항
+- 노코드 프로토타입 자료 공유 및 시각적 구조 분석 (Phase 1 첫 작업)
+- 권한 그룹 정의 — 일반/특정 그룹의 구체적 권한 매트릭스 (게시판별 읽기/쓰기/댓글)
+- 카테고리 트리 구조 (대/중/소분류) 및 콘텐츠 유형별 메타데이터
+- 인프라 선택지 — AWS(EC2/RDS/S3/CloudFront) vs Vercel + Supabase 비용·운영 트레이드오프
+- ADMS·전문가 매칭 모듈의 향후 로드맵 — 본 범위는 확장 가능 아키텍처 설계까지 포함
+- 도메인 / SSL / 메일 발신 환경 준비 일정
+
+---
+
+<유사 프로젝트 진행 경험>
+
+▶ 전자결재 SaaS (2026.01–2026.03)
+- 프로젝트 유형: B2B SaaS / 기업용 어드민 포탈
+- 핵심 기능: 다단계 전자결재 엔진(8종 결재 액션), 어드민 + DB 대시보드, RBAC + CASL 7 역할 권한, Lexical 리치 에디터(170 파일, 26 커스텀 노드), 실시간 공동편집(CRDT/Yjs)
+- 유사점: 본 프로젝트의 어드민 페이지 + DB 대시보드, 사용자 권한별 게시판(RBAC), CMS 콘텐츠 작성 UX와 동일 패턴
+- 기술 스택: NestJS 10, Next.js 13, TypeScript, MySQL 8, Lexical+Yjs, CASL, MUI v5, Docker
+
+▶ VC 펀드 관리 플랫폼 (2023.11–2024.12)
+- 프로젝트 유형: 핀테크 / 대규모 콘텐츠 포탈
+- 핵심 기능: GP/LP/스타트업 권한별 포탈, AI 투자 보고서, 5계층 보안 + DLP + GeoIP, VICS 규제 양식 자동화, CRDT 실시간 공동편집
+- 유사점: 80+ 엔티티 / 200+ API 운영(대규모 CMS 검증), 사용자 그룹별 포탈 분리, 회원 + 활동 로그 + 마이페이지, 민감 정보 다층 보안
+- 기술 스택: Next.js 13, NestJS 10, MySQL, Lexical, Yjs, AWS
+
+▶ 시니어 주간보호 관리 플랫폼 (2025)
+- 프로젝트 유형: B2B SaaS / 헬스케어 / 멀티테넌트
+- 핵심 기능: 시설별 권한 분리(멀티테넌트), 케어 로그·투약 관리, AI 건강 분석, 전자서명, 반응형 웹 + 모바일
+- 유사점: 다중 권한 그룹 관리 패턴, 반응형 웹 + 어드민 분리, 인앱 + 이메일 통합 알림, AWS CDK 기반 안정 배포
+- 기술 스택: NestJS, Next.js, TypeScript, MySQL, AWS CDK, Docker
+
+---
+
+<사용 기술과 툴>
+
+▶ 개발 기술
+- 프론트엔드: Next.js 14 (App Router), React 18, TypeScript, TailwindCSS, Lexical (리치 에디터)
+- 백엔드: NestJS 10, TypeScript, Prisma, PostgreSQL 15, Redis
+- 인증/권한: NextAuth.js (카카오/네이버/구글 SSO), JWT + Refresh Token, CASL (RBAC)
+- SEO: Next.js SSR/SSG/ISR, next-sitemap, JSON-LD 구조화 데이터, 동적 OG/메타 자동 생성
+- 인프라: AWS (EC2/ECS, RDS, S3, CloudFront, Route53) — 또는 Vercel + Supabase 옵션 협의 가능
+- 디자인: Figma (디자인 시스템 + 반응형 PC/MO)
+
+▶ 개발 도구 및 인프라
+- 버전 관리: GitHub
+- CI/CD: GitHub Actions (PR마다 lint/test/build, 메인 머지 시 자동 배포)
+- 컨테이너: Docker
+- 모니터링/로깅: Sentry, CloudWatch
+
+▶ 커뮤니케이션
+- 일일 진행 공유: Slack 또는 카카오톡
+- 주간 미팅: Zoom / Google Meet
+- 문서 공유: Notion 또는 Google Docs
+- 이슈 트래킹: GitHub Issues
+```
+
+### 6.6 관련 포트폴리오 추천
+1. **전자결재 SaaS (EZ-Approve)** — 어드민 + DB 대시보드, RBAC + CASL 권한 매트릭스, Lexical 리치 에디터 기반 CMS 등 본 프로젝트의 핵심 패턴을 가장 포괄적으로 구현한 사례
+2. **VC 펀드 관리 플랫폼 (Series-B)** — 80+ 엔티티 / 200+ API 규모의 대규모 콘텐츠 운영, 사용자 그룹별 포탈 분리, 다층 보안 검증
+3. **시니어 주간보호 관리 플랫폼 (Harmony Link)** — 멀티테넌트 권한 모델링, 반응형 웹 + 어드민 분리, AWS 기반 안정 인프라

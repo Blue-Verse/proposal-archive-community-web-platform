@@ -1,0 +1,904 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="노코드 프로토타입 기반 정보 아카이브 및 커뮤니티 웹 플랫폼 — 프로젝트 제안서" />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <link href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT@2/fonts/variable/woff2/SUIT-Variable.css" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['SUIT Variable', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'monospace']
+          },
+          colors: {
+            brand: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              200: '#bae6fd',
+              600: '#0284c7',
+              700: '#0369a1'
+            }
+          },
+          boxShadow: {
+            soft: '0 10px 30px -18px rgba(15, 23, 42, 0.35)'
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    :root { color-scheme: light; font-size: 16px; }
+    body {
+      font-family: 'SUIT Variable', sans-serif;
+      font-size: 1rem;
+      background-image:
+        radial-gradient(circle at 12% 18%, rgba(14, 165, 233, 0.08), transparent 42%),
+        radial-gradient(circle at 88% 82%, rgba(2, 132, 199, 0.06), transparent 48%);
+    }
+
+    .doc-content h1, .doc-content h2, .doc-content h3, .doc-content h4 {
+      color: rgb(15 23 42); font-weight: 700; letter-spacing: -0.01em;
+      line-height: 1.3; margin-top: 1.6em; margin-bottom: 0.7em;
+    }
+    .doc-content h1 { font-size: 2rem; margin-top: 0.2em; }
+    .doc-content h2 { font-size: 1.4rem; }
+    .doc-content h3 { font-size: 1.15rem; }
+    .doc-content p, .doc-content li {
+      color: rgb(51 65 85); line-height: 1.8; font-size: 1rem;
+    }
+    .doc-content p, .doc-content ul, .doc-content ol,
+    .doc-content table, .doc-content pre, .doc-content blockquote {
+      margin-bottom: 1rem;
+    }
+    .doc-content ul, .doc-content ol { padding-left: 1.2rem; }
+    .doc-content ul { list-style: disc; }
+    .doc-content ol { list-style: decimal; }
+    .doc-content table {
+      width: 100%; border-collapse: collapse;
+      border: 1px solid rgb(226 232 240); border-radius: 0.75rem;
+      overflow: hidden; font-size: 1rem;
+    }
+    .doc-content th, .doc-content td {
+      border: 1px solid rgb(226 232 240); padding: 0.7rem 0.8rem;
+      text-align: left; vertical-align: top;
+    }
+    .doc-content th {
+      background: rgb(248 250 252); color: rgb(30 41 59); font-weight: 600;
+    }
+    .doc-content pre, .doc-content code {
+      font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+    }
+    .doc-content pre {
+      background: rgb(15 23 42); color: rgb(226 232 240);
+      padding: 1rem; border-radius: 0.75rem; overflow-x: auto;
+      font-size: 1rem; line-height: 1.65;
+    }
+    .doc-content p code, .doc-content li code,
+    .doc-content td code, .doc-content th code {
+      background: rgb(241 245 249); color: rgb(15 23 42);
+      border: 1px solid rgb(226 232 240); border-radius: 0.4rem;
+      padding: 0.08rem 0.4rem; font-size: 1em;
+    }
+    .doc-content blockquote {
+      border-left: 3px solid rgb(14 165 233); padding-left: 0.85rem;
+      color: rgb(71 85 105); background: rgb(240 249 255);
+      border-radius: 0.5rem; padding-top: 0.55rem; padding-bottom: 0.55rem;
+    }
+
+    .text-xs { font-size: 1rem !important; }
+
+    .timeline { position: relative; padding-left: 2rem; }
+    .timeline::before {
+      content: ''; position: absolute; left: 0.6rem; top: 0.25rem; bottom: 0.25rem;
+      width: 2px; background: rgb(186 230 253);
+    }
+    .timeline-item { position: relative; margin-bottom: 1.75rem; }
+    .timeline-item::before {
+      content: ''; position: absolute; left: -1.65rem; top: 0.35rem;
+      width: 0.75rem; height: 0.75rem; border-radius: 50%;
+      background: rgb(2 132 199); border: 3px solid rgb(224 242 254);
+    }
+
+    .page-section { display: none; }
+    .page-section.active { display: block; }
+
+    #sidebar-backdrop { display: none; }
+    #sidebar-backdrop.open { display: block; }
+    @media (max-width: 1023px) {
+      #sidebar { transform: translateX(-100%); transition: transform 0.2s ease; position: fixed; top: 0; left: 0; z-index: 40; height: 100vh; width: 80vw; max-width: 320px; }
+      #sidebar.open { transform: translateX(0); }
+    }
+  </style>
+  <title>노코드 프로토타입 기반 정보 아카이브 및 커뮤니티 웹 플랫폼 — 프로젝트 제안서</title>
+</head>
+<body class="text-slate-800 font-sans antialiased">
+  <div class="mx-auto max-w-7xl px-4 py-6 md:px-8 md:py-10">
+
+    <header class="mb-6 rounded-2xl border border-slate-200/70 bg-white/85 px-5 py-3 shadow-soft backdrop-blur">
+      <div class="flex flex-wrap items-center gap-3">
+        <button id="sidebar-toggle" class="lg:hidden inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1 text-sm font-medium text-slate-700 hover:border-sky-300 hover:text-sky-700">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          메뉴
+        </button>
+        <a href="#home" class="inline-flex items-center shrink-0 text-sm font-bold tracking-tight text-slate-800">
+          프로젝트 제안서
+        </a>
+        <div class="hidden sm:block ml-auto text-right">
+          <p class="text-sm font-semibold tracking-[0.04em] text-sky-700/90">정보 아카이브 + 커뮤니티 웹 플랫폼</p>
+          <p class="text-xs text-slate-400">프로젝트 제안서</p>
+        </div>
+      </div>
+    </header>
+
+    <div class="grid gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
+
+      <div id="sidebar-backdrop" class="fixed inset-0 bg-black/30 z-30 lg:hidden" onclick="closeSidebar()"></div>
+      <aside id="sidebar" class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 shadow-soft backdrop-blur lg:sticky lg:top-6 lg:h-[calc(100vh-4rem)] lg:overflow-auto">
+        <nav id="nav" class="space-y-1">
+          <a href="#home" data-page="home" class="nav-link block rounded-xl border px-3 py-2 text-sm border-sky-200 bg-sky-50 font-medium text-sky-700">홈</a>
+          <div class="my-3 border-t border-slate-200"></div>
+          <p class="mb-2 mt-1 px-1 text-sm font-semibold tracking-[0.14em] text-slate-400">제안서</p>
+          <a href="#overview" data-page="overview" class="nav-link block rounded-xl border border-transparent px-3 py-2 text-sm text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900">프로젝트 소개</a>
+          <a href="#estimate" data-page="estimate" class="nav-link block rounded-xl border border-transparent px-3 py-2 text-sm text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900">견적서</a>
+          <a href="#manday" data-page="manday" class="nav-link block rounded-xl border border-transparent px-3 py-2 text-sm text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900">공수계산서</a>
+          <a href="#prd" data-page="prd" class="nav-link block rounded-xl border border-transparent px-3 py-2 text-sm text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900">PRD</a>
+          <div class="my-3 border-t border-slate-200"></div>
+          <p class="mb-2 mt-1 px-1 text-sm font-semibold tracking-[0.14em] text-slate-400">일정 & 경험</p>
+          <a href="#timeline" data-page="timeline" class="nav-link block rounded-xl border border-transparent px-3 py-2 text-sm text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900">일정 제안</a>
+          <a href="#portfolio" data-page="portfolio" class="nav-link block rounded-xl border border-transparent px-3 py-2 text-sm text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900">유사 프로젝트 경험</a>
+        </nav>
+      </aside>
+
+      <main class="min-w-0">
+
+        <!-- HOME -->
+        <div id="page-home" class="page-section active space-y-6">
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-6 shadow-soft backdrop-blur md:p-8">
+            <p class="mb-2 text-xs font-semibold tracking-[0.2em] text-sky-700/80">프로젝트 제안서</p>
+            <h1 class="text-2xl font-bold tracking-tight text-slate-900 md:text-3xl">노코드 프로토타입 기반 정보 아카이브 및 커뮤니티 웹 플랫폼</h1>
+            <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-600 md:text-base">노코드 프로토타입의 시각적 구조와 기획 로직을 그대로 계승하면서, 성능·보안·확장성을 갖춘 커스텀 웹 플랫폼으로 전환합니다. CMS·커뮤니티·회원 시스템·어드민을 통합 구축하고, SEO 최적화와 ADMS·매칭 시스템 모듈 확장이 가능한 아키텍처로 설계합니다.</p>
+            <div class="mt-4 flex flex-wrap items-center gap-2">
+              <span class="inline-flex rounded-full border border-sky-200 bg-sky-100 px-2.5 py-1 text-sm font-semibold tracking-[0.12em] text-sky-700">18,000,000원</span>
+              <span class="inline-flex rounded-full border border-sky-200 bg-sky-100 px-2.5 py-1 text-sm font-semibold tracking-[0.12em] text-sky-700">90일</span>
+              <span class="inline-flex rounded-full border border-amber-200 bg-amber-100 px-2.5 py-1 text-sm font-semibold tracking-[0.12em] text-amber-700">웹 / CMS / 커뮤니티</span>
+              <a href="https://www.wishket.com/project/155014/" target="_blank" rel="noopener noreferrer"
+                 class="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2.5 py-1 text-sm font-medium text-slate-500 transition hover:border-sky-300 hover:text-sky-700">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                원본 공고
+              </a>
+            </div>
+          </div>
+
+          <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <a href="#overview" class="group rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-sky-100 text-sky-700 border-sky-200">소개</div>
+              <h2 class="text-lg font-semibold tracking-tight text-slate-900 group-hover:text-sky-700">프로젝트 소개</h2>
+              <p class="mt-2 text-sm leading-7 text-slate-600">프로젝트 분석, 핵심 요구사항 정리, 제안 포인트</p>
+            </a>
+            <a href="#estimate" class="group rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-sky-100 text-sky-700 border-sky-200">비용</div>
+              <h2 class="text-lg font-semibold tracking-tight text-slate-900 group-hover:text-sky-700">견적서</h2>
+              <p class="mt-2 text-sm leading-7 text-slate-600">항목별 비용 산출 근거 및 상세 견적</p>
+            </a>
+            <a href="#manday" class="group rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-sky-100 text-sky-700 border-sky-200">공수</div>
+              <h2 class="text-lg font-semibold tracking-tight text-slate-900 group-hover:text-sky-700">공수계산서</h2>
+              <p class="mt-2 text-sm leading-7 text-slate-600">기능별 개발 공수(man-day) 산출 내역</p>
+            </a>
+            <a href="#prd" class="group rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-amber-100 text-amber-700 border-amber-200">기획</div>
+              <h2 class="text-lg font-semibold tracking-tight text-slate-900 group-hover:text-sky-700">PRD</h2>
+              <p class="mt-2 text-sm leading-7 text-slate-600">기능 요구사항 정의서, 사용자 스토리, 기술 제약</p>
+            </a>
+            <a href="#timeline" class="group rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-amber-100 text-amber-700 border-amber-200">일정</div>
+              <h2 class="text-lg font-semibold tracking-tight text-slate-900 group-hover:text-sky-700">일정 제안</h2>
+              <p class="mt-2 text-sm leading-7 text-slate-600">단계별 마일스톤 및 산출물 일정표</p>
+            </a>
+            <a href="#portfolio" class="group rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-amber-100 text-amber-700 border-amber-200">경험</div>
+              <h2 class="text-lg font-semibold tracking-tight text-slate-900 group-hover:text-sky-700">유사 프로젝트 경험</h2>
+              <p class="mt-2 text-sm leading-7 text-slate-600">유사 프로젝트 수행 경험 및 기술 스택</p>
+            </a>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
+              <p class="text-2xl font-bold text-sky-700">13+</p>
+              <p class="mt-1 text-sm text-slate-500">완료 프로젝트</p>
+            </div>
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
+              <p class="text-2xl font-bold text-sky-700">80+</p>
+              <p class="mt-1 text-sm text-slate-500">DB 엔티티 경험</p>
+            </div>
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
+              <p class="text-2xl font-bold text-sky-700">200+</p>
+              <p class="mt-1 text-sm text-slate-500">API 엔드포인트</p>
+            </div>
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
+              <p class="text-2xl font-bold text-sky-700">7+</p>
+              <p class="mt-1 text-sm text-slate-500">RBAC 역할 모델링</p>
+            </div>
+          </div>
+
+          <div class="rounded-2xl border border-sky-200/70 bg-gradient-to-br from-sky-50 to-brand-50 p-6 text-center shadow-soft md:p-10">
+            <h2 class="text-xl font-bold tracking-tight text-slate-900 md:text-2xl">함께 만들어 가겠습니다</h2>
+            <p class="mx-auto mt-3 max-w-lg text-sm leading-7 text-slate-600">각 메뉴를 클릭하시면 상세 내용을 확인하실 수 있습니다.</p>
+          </div>
+        </div>
+
+        <!-- OVERVIEW -->
+        <div id="page-overview" class="page-section space-y-6">
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <article class="doc-content">
+              <h1>프로젝트 소개</h1>
+              <blockquote>노코드 프로토타입의 시각적 구조와 기획 로직을 그대로 계승하면서, 성능·보안·확장성을 갖춘 커스텀 웹 플랫폼으로 전환합니다. CMS·커뮤니티·회원 시스템·어드민을 통합 구축하고, SEO 최적화와 ADMS·매칭 시스템 모듈 확장이 가능한 아키텍처로 설계합니다.</blockquote>
+
+              <h2>프로젝트 개요</h2>
+              <table>
+                <tr><th>항목</th><th>내용</th></tr>
+                <tr><td>프로젝트명</td><td><a href="https://www.wishket.com/project/155014/" target="_blank" rel="noopener noreferrer" class="text-sky-700 underline decoration-sky-300 hover:decoration-sky-500">노코드 프로토타입 기반 정보 아카이브 및 커뮤니티 웹 플랫폼</a></td></tr>
+                <tr><td>카테고리</td><td>웹 홈페이지·게시판 / 커뮤니티·SNS / CMS</td></tr>
+                <tr><td>제안 금액</td><td>18,000,000원 (VAT 별도)</td></tr>
+                <tr><td>제안 기간</td><td>90일 (계약 체결 후 즉시 착수)</td></tr>
+                <tr><td>핵심 기술</td><td>Next.js 14 (App Router) · NestJS · PostgreSQL · Prisma · AWS</td></tr>
+              </table>
+
+              <h2>핵심 요구사항 분석</h2>
+              <ul>
+                <li><strong>정보 아카이브 CMS</strong> — 카테고리별 상세 페이지, 정책·가이드라인 게시판 구조, 관리자가 직접 생성·수정·삭제 가능한 콘텐츠 관리 시스템</li>
+                <li><strong>커뮤니티 기능</strong> — 권한 그룹별 게시판 분리, 댓글·좋아요·북마크 등 네이버 카페 수준의 기본 소셜 인터랙션</li>
+                <li><strong>회원 시스템</strong> — 이메일·비밀번호 로그인 + 카카오/네이버/구글 SSO, 개인별 활동 로그 및 관심 게시물 저장</li>
+                <li><strong>관리자 페이지</strong> — 회원·게시물·권한 통합 관리, DB 현황 대시보드</li>
+                <li><strong>SEO 최적화</strong> — Next.js SSR/SSG 기반 시멘틱 마크업, 동적 OG/메타 태그, sitemap.xml·robots.txt 자동 생성, JSON-LD 구조화 데이터</li>
+                <li><strong>확장성 설계</strong> — ADMS(광고 관리)·전문가 매칭 시스템을 모듈로 즉시 추가할 수 있는 도메인 분리 아키텍처</li>
+                <li><strong>보안</strong> — HTTPS, 비밀번호 bcrypt 해싱, JWT + Refresh Token, OWASP Top 10 대응, 민감 데이터 컬럼 암호화</li>
+              </ul>
+
+              <h2>제안 포인트</h2>
+              <p><strong>1. 노코드→커스텀 전환에 특화된 접근</strong></p>
+              <p>기존 프로토타입의 시각적 구조와 기획 로직을 그대로 보존하면서, 성능·확장성 한계를 해소하는 마이그레이션 전략으로 진행합니다. 첫 주에 노코드 프로토타입을 분석하여 화면 흐름·데이터 모델·비즈니스 로직을 도출하고, 이를 PRD 및 ERD로 정형화한 뒤 개발에 착수합니다.</p>
+
+              <p><strong>2. SEO 최우선 기술 스택</strong></p>
+              <p>Next.js App Router의 SSR/SSG·ISR을 활용하여 정책 키워드 검색 시 구글·네이버 최상단 노출을 위한 정적 HTML을 사전 렌더링합니다. 카테고리·게시물 메타 태그를 콘텐츠 기반으로 자동 생성하고, JSON-LD 구조화 데이터(Article, BreadcrumbList, Organization)를 적용합니다.</p>
+
+              <p><strong>3. 확장 모듈 대응 아키텍처</strong></p>
+              <p>NestJS 모듈 기반 도메인 분리(Account · Archive · Community · Admin · Notification · Search) 구조를 채택합니다. 차후 ADMS·매칭 모듈은 신규 모듈 추가만으로 통합되며, 기존 코드 수정 없이 점진적 확장이 가능합니다. 데이터베이스는 카테고리·태그·관계 테이블을 일반화하여 콘텐츠 유형 추가에 유연하게 대응합니다.</p>
+
+              <p><strong>4. 권한 모델링 전문성</strong></p>
+              <p>전자결재 SaaS(7 사용자 역할, 6계층 보안), VC 펀드 포탈(다단계 권한·DLP·GeoIP) 등 RBAC 모델링 경험을 보유하고 있습니다. 본 프로젝트의 "사용자 권한별 게시판" 요구사항을 CASL 또는 RBAC 미들웨어로 선언적으로 구현합니다.</p>
+
+              <p><strong>5. 1순위 "산출물 완성도" 충족</strong></p>
+              <p>유사 프로젝트 수행 경험을 바탕으로 검증된 패턴(인증, RBAC, CMS, 검색)을 재사용하여 안정성을 확보합니다. 마일스톤 단위 검수를 통해 단계별 완성도를 보장하며, 프로젝트 종료 시 소스 코드·API 문서·운영 매뉴얼·SEO 보고서까지 정식 산출물로 납품합니다.</p>
+
+              <h2>사용 기술 및 툴</h2>
+              <h3>개발 기술</h3>
+              <div class="flex flex-wrap gap-2 not-prose mb-4">
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">Next.js 14</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">React 18</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">TypeScript</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">TailwindCSS</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">NestJS 10</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">Prisma</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">PostgreSQL 15</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">Redis</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">NextAuth.js</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">CASL (RBAC)</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">Lexical (Rich Editor)</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">AWS (EC2/RDS/S3/CloudFront)</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">Docker</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">GitHub Actions</span>
+                <span class="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-sky-700">Figma</span>
+              </div>
+              <h3>협업 및 커뮤니케이션</h3>
+              <div class="flex flex-wrap gap-2 not-prose">
+                <span class="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-sm font-medium text-amber-700">Slack / 카카오톡</span>
+                <span class="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-sm font-medium text-amber-700">Notion</span>
+                <span class="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-sm font-medium text-amber-700">Google Meet / Zoom</span>
+                <span class="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-sm font-medium text-amber-700">GitHub Issues</span>
+                <span class="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-sm font-medium text-amber-700">Figma Comments</span>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <!-- ESTIMATE -->
+        <div id="page-estimate" class="page-section space-y-6">
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <article class="doc-content">
+              <h1>견적서</h1>
+              <blockquote>본 견적서는 프로젝트 요구사항 분석을 기반으로 산출되었습니다.</blockquote>
+
+              <h2>견적 요약</h2>
+              <table>
+                <tr><th>항목</th><th>내용</th></tr>
+                <tr><td>프로젝트명</td><td>노코드 프로토타입 기반 정보 아카이브 및 커뮤니티 웹 플랫폼</td></tr>
+                <tr><td>제안 금액</td><td><strong>18,000,000원 (VAT 별도)</strong></td></tr>
+                <tr><td>제안 기간</td><td>90일</td></tr>
+                <tr><td>견적 유효기간</td><td>제안일로부터 30일</td></tr>
+              </table>
+
+              <h2>상세 견적 내역</h2>
+              <table>
+                <thead>
+                  <tr><th>구분</th><th>항목</th><th>수량</th><th>금액</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>기획/설계</td><td>요구사항 분석, 노코드 프로토타입 분석, IA 설계, ERD 설계, API 명세 작성</td><td>1식</td><td>2,500,000원</td></tr>
+                  <tr><td>UI/UX 디자인</td><td>반응형 웹(PC/MO) Figma 디자인 시스템, 사용자 화면 + 어드민 약 30개 화면</td><td>1식</td><td>3,500,000원</td></tr>
+                  <tr><td>프론트엔드</td><td>Next.js 사용자 화면(SSR/SSG), 권한별 라우팅, SEO 메타 자동 생성, 리치 에디터</td><td>1식</td><td>5,000,000원</td></tr>
+                  <tr><td>백엔드</td><td>NestJS API(CMS, 커뮤니티, 회원, 어드민), RBAC, 소셜 SSO, 검색</td><td>1식</td><td>5,000,000원</td></tr>
+                  <tr><td>QA/배포</td><td>E2E 테스트, SEO 검증, 보안 점검, AWS 인프라 셋업, 운영 매뉴얼</td><td>1식</td><td>2,000,000원</td></tr>
+                </tbody>
+                <tfoot>
+                  <tr><th colspan="3">합계 (VAT 별도)</th><th>18,000,000원</th></tr>
+                </tfoot>
+              </table>
+
+              <h2>산정 근거</h2>
+              <ul>
+                <li>총 공수 67 M/D × 단가 기반으로 산정</li>
+                <li>기획·디자인 25% / 개발 55% / QA·배포 20% 비율 적용</li>
+                <li>유사 규모(50+ 페이지, 80+ 엔티티, 200+ API) B2B SaaS·포탈 수행 경험 기반 효율적 진행</li>
+                <li>10~15% 버퍼 포함</li>
+              </ul>
+
+              <h2>포함 사항</h2>
+              <ul>
+                <li>소스 코드 전체 이관 (프론트엔드 + 백엔드 + 인프라 IaC)</li>
+                <li>개발 문서 (PRD, API 명세서, ERD, 컴포넌트 카탈로그, 배포 가이드)</li>
+                <li>Figma 디자인 원본 파일</li>
+                <li>관리자 운영 매뉴얼 (PDF / Notion)</li>
+                <li>SEO 최적화 보고서 (시멘틱 마크업·메타태그·sitemap·구조화 데이터 점검)</li>
+                <li>1개월 무상 하자 보수 (런칭 후 30일)</li>
+                <li>배포 환경 셋업 1회 (AWS 또는 Vercel 옵션)</li>
+              </ul>
+
+              <h2>불포함 사항</h2>
+              <ul>
+                <li>서버 호스팅 비용 (AWS, Vercel, RDS 등)</li>
+                <li>도메인 구매 비용 및 SSL 인증서 (Let's Encrypt 무료 사용 가능)</li>
+                <li>외부 유료 API 사용 비용 (소셜 SSO 자체는 무료)</li>
+                <li>하자 보수 기간 이후 유지보수</li>
+                <li>ADMS·전문가 매칭 시스템 본 개발 (확장 가능 아키텍처는 포함, 모듈 자체는 별도 견적)</li>
+                <li>콘텐츠 데이터 입력 작업 (관리자 CMS는 제공, 데이터 입력은 클라이언트 담당)</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+
+        <!-- MANDAY -->
+        <div id="page-manday" class="page-section space-y-6">
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <article class="doc-content">
+              <h1>공수계산서</h1>
+              <blockquote>기능별 개발 공수(Man-Day)를 산출하여 일정과 비용의 근거를 제시합니다.</blockquote>
+
+              <h2>공수 요약</h2>
+              <table>
+                <tr><th>구분</th><th>공수 (M/D)</th><th>비율</th></tr>
+                <tr><td>기획/설계</td><td>8 M/D</td><td>12%</td></tr>
+                <tr><td>UI/UX 디자인</td><td>13 M/D</td><td>19%</td></tr>
+                <tr><td>프론트엔드</td><td>19 M/D</td><td>28%</td></tr>
+                <tr><td>백엔드</td><td>20 M/D</td><td>30%</td></tr>
+                <tr><td>QA/배포</td><td>7 M/D</td><td>11%</td></tr>
+                <tr><th>합계</th><th>67 M/D</th><th>100%</th></tr>
+              </table>
+
+              <h2>기능별 상세 공수</h2>
+              <table>
+                <thead>
+                  <tr><th>기능 영역</th><th>세부 작업</th><th>담당</th><th>공수 (M/D)</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td rowspan="3">기획/설계</td><td>노코드 프로토타입 분석 + 기능 명세화</td><td>기획</td><td>3</td></tr>
+                  <tr><td>IA / 화면 흐름 설계 / ERD</td><td>기획</td><td>3</td></tr>
+                  <tr><td>API 명세 + 권한 모델 설계</td><td>기획</td><td>2</td></tr>
+                  <tr><td rowspan="3">UI/UX 디자인</td><td>디자인 시스템 (컬러·타이포·컴포넌트)</td><td>디자인</td><td>3</td></tr>
+                  <tr><td>사용자 화면 반응형 디자인 (PC/MO 약 18화면)</td><td>디자인</td><td>7</td></tr>
+                  <tr><td>어드민 화면 디자인 (약 12화면)</td><td>디자인</td><td>3</td></tr>
+                  <tr><td rowspan="5">프론트엔드</td><td>프로젝트 셋업 + 디자인 시스템 코드화</td><td>FE</td><td>2</td></tr>
+                  <tr><td>홈/카테고리 아카이브 페이지 (SSR + SEO)</td><td>FE</td><td>5</td></tr>
+                  <tr><td>커뮤니티 게시판 (목록/상세/작성, 댓글, 좋아요)</td><td>FE</td><td>5</td></tr>
+                  <tr><td>회원/마이페이지 (로그인, 활동 로그, 북마크)</td><td>FE</td><td>3</td></tr>
+                  <tr><td>어드민 페이지 (CMS, 회원/게시물 관리, 대시보드)</td><td>FE</td><td>4</td></tr>
+                  <tr><td rowspan="6">백엔드</td><td>인증 모듈 (이메일 + 카카오/네이버/구글 SSO)</td><td>BE</td><td>3</td></tr>
+                  <tr><td>RBAC 권한 모듈 (CASL)</td><td>BE</td><td>2</td></tr>
+                  <tr><td>아카이브 CMS API (카테고리, 콘텐츠, 미디어)</td><td>BE</td><td>4</td></tr>
+                  <tr><td>커뮤니티 API (게시판, 댓글, 좋아요, 북마크)</td><td>BE</td><td>4</td></tr>
+                  <tr><td>어드민 API (회원/게시물 관리, 대시보드 집계)</td><td>BE</td><td>4</td></tr>
+                  <tr><td>검색 + SEO 메타 자동 생성 + 알림</td><td>BE</td><td>3</td></tr>
+                  <tr><td rowspan="3">QA/배포</td><td>E2E 테스트 + 보안 점검 + 성능 튜닝</td><td>QA</td><td>3</td></tr>
+                  <tr><td>AWS 인프라 셋업 (RDS, S3, CloudFront, 도메인) + CI/CD</td><td>DevOps</td><td>2</td></tr>
+                  <tr><td>SEO 검증 + 운영 매뉴얼 + 하자 대응</td><td>QA</td><td>2</td></tr>
+                </tbody>
+              </table>
+
+              <h2>산정 기준</h2>
+              <ul>
+                <li>1 M/D = 8시간 기준 (1인 1일 작업량)</li>
+                <li>주 5일 근무 기준</li>
+                <li>버퍼 10~15% 포함</li>
+                <li>유사 프로젝트 수행 경험 기반 효율적 개발 (50+ 페이지, 80+ 엔티티, 200+ API 규모 실무 경험)</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+
+        <!-- PRD -->
+        <div id="page-prd" class="page-section space-y-6">
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <article class="doc-content">
+              <h1>PRD (Product Requirements Document)</h1>
+              <blockquote>프로젝트 요구사항을 정의하고 기능 범위를 명확히 합니다.</blockquote>
+
+              <h2>1. 프로젝트 배경 및 목적</h2>
+              <p>현재 노코드 툴 기반 프로토타입은 시각적 구조와 기획 로직 검증은 완료했으나, 성능·보안·확장성 측면에서 운영 단계로의 전환에 한계가 있습니다. 본 프로젝트는 산재된 정책·가이드라인을 구조화하여 제공하는 정보 아카이브와, 사용자 권한별로 활동 가능한 커뮤니티 기능을 중심으로 한 커스텀 웹 플랫폼을 구축하는 것을 목표로 합니다.</p>
+              <p>강력한 CMS로 관리 효율을 극대화하고, SEO 최적화로 정책 키워드 검색 시 상위 노출을 확보하며, 향후 광고 관리 시스템(ADMS) 및 전문가/사용자 매칭 시스템을 모듈로 확장 가능한 아키텍처를 통해 지속적인 비즈니스 성장 기반을 마련합니다.</p>
+
+              <h2>2. 사용자 정의</h2>
+              <table>
+                <thead>
+                  <tr><th>사용자 유형</th><th>설명</th><th>주요 기능</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>비로그인 방문자</td><td>아카이브 콘텐츠 검색·열람 사용자</td><td>카테고리 탐색, 정보 검색, 공개 게시물 열람</td></tr>
+                  <tr><td>일반 회원</td><td>회원가입을 완료한 기본 사용자</td><td>일반 게시판 작성/댓글/좋아요/북마크, 활동 로그 조회</td></tr>
+                  <tr><td>권한 그룹 회원</td><td>관리자가 부여한 특정 권한을 가진 사용자</td><td>전용 게시판 접근, 추가 콘텐츠 열람</td></tr>
+                  <tr><td>관리자</td><td>플랫폼 운영 책임자</td><td>CMS 운영, 회원·게시물 관리, 권한 부여, DB 대시보드</td></tr>
+                  <tr><td>슈퍼 관리자</td><td>관리자 계정을 관리하는 최상위 운영자</td><td>관리자 계정 생성/회수, 시스템 설정, 운영 로그 감사</td></tr>
+                </tbody>
+              </table>
+
+              <h2>3. 기능 요구사항</h2>
+
+              <h3>3.1 정보 아카이브 (CMS)</h3>
+              <ul>
+                <li><strong>[필수]</strong> 카테고리 트리 구조 (대분류/중분류/소분류 3계층)</li>
+                <li><strong>[필수]</strong> 카테고리별 상세 페이지 (사진+정보 나열형 게시판 구조)</li>
+                <li><strong>[필수]</strong> 정책·가이드라인 콘텐츠 CRUD (Lexical 리치 에디터)</li>
+                <li><strong>[필수]</strong> 이미지·첨부파일 업로드 (S3 + CloudFront)</li>
+                <li><strong>[필수]</strong> 카테고리·콘텐츠 노출 순서 드래그 정렬</li>
+                <li><strong>[필수]</strong> 콘텐츠 임시 저장 / 게시 / 비공개 상태 관리</li>
+                <li><strong>[선택]</strong> 콘텐츠 변경 이력 추적 (감사 로그)</li>
+              </ul>
+
+              <h3>3.2 커뮤니티 기능</h3>
+              <ul>
+                <li><strong>[필수]</strong> 게시판 생성·관리 (관리자가 게시판별 권한 그룹 지정)</li>
+                <li><strong>[필수]</strong> 게시물 작성/수정/삭제 + 이미지 첨부</li>
+                <li><strong>[필수]</strong> 댓글·대댓글 (1단계 깊이)</li>
+                <li><strong>[필수]</strong> 좋아요 / 북마크</li>
+                <li><strong>[필수]</strong> 게시물 검색 (제목·본문·작성자)</li>
+                <li><strong>[필수]</strong> 신고 기능 (관리자 검토 큐로 전달)</li>
+                <li><strong>[선택]</strong> 인기 게시물 / 최신 게시물 위젯</li>
+              </ul>
+
+              <h3>3.3 회원 시스템</h3>
+              <ul>
+                <li><strong>[필수]</strong> 이메일/비밀번호 회원가입 + 이메일 인증</li>
+                <li><strong>[필수]</strong> 소셜 로그인 — 카카오 / 네이버 / 구글</li>
+                <li><strong>[필수]</strong> 비밀번호 재설정 (이메일 토큰)</li>
+                <li><strong>[필수]</strong> 마이페이지 — 프로필 수정, 활동 로그, 북마크 목록</li>
+                <li><strong>[필수]</strong> 회원 탈퇴 (개인정보 비식별화 처리)</li>
+                <li><strong>[필수]</strong> 활동 로그 — 게시물 조회, 댓글 작성, 좋아요 이력 기록</li>
+              </ul>
+
+              <h3>3.4 관리자 페이지</h3>
+              <ul>
+                <li><strong>[필수]</strong> DB 현황 대시보드 (회원수, 게시물수, 일별 트래픽, 인기 콘텐츠 Top 10)</li>
+                <li><strong>[필수]</strong> 회원 관리 — 검색·조회·수정·정지·탈퇴, 권한 그룹 부여</li>
+                <li><strong>[필수]</strong> 게시판 관리 — 게시판 생성/삭제, 권한 그룹 매핑</li>
+                <li><strong>[필수]</strong> 게시물 관리 — 신고 검토 큐, 강제 비공개/삭제</li>
+                <li><strong>[필수]</strong> CMS — 카테고리·콘텐츠 관리, 미디어 라이브러리</li>
+                <li><strong>[필수]</strong> 시스템 설정 — 사이트 메타, SEO 기본값, 메일 발송 설정</li>
+                <li><strong>[선택]</strong> 운영 로그 감사 (관리자 행위 추적)</li>
+              </ul>
+
+              <h2>4. 비기능 요구사항</h2>
+              <table>
+                <thead>
+                  <tr><th>항목</th><th>요구사항</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>반응형</td><td>PC(1280+) / Tablet(768+) / Mobile(360+) 3단 브레이크포인트, Tailwind 모바일 퍼스트</td></tr>
+                  <tr><td>SEO</td><td>Lighthouse SEO 점수 95+, Core Web Vitals 통과, sitemap·robots·OG·JSON-LD 자동 생성, 시멘틱 마크업</td></tr>
+                  <tr><td>성능</td><td>SSR 페이지 TTFB 500ms 이하, 이미지 WebP/AVIF + CloudFront 캐싱</td></tr>
+                  <tr><td>확장성</td><td>도메인 모듈 분리 (Account · Archive · Community · Admin · Notification · Search), ADMS·매칭 모듈 추가 시 기존 코드 수정 불필요</td></tr>
+                  <tr><td>보안</td><td>HTTPS, JWT + Refresh Token, 비밀번호 bcrypt(12 round), OWASP Top 10 대응(XSS·CSRF·SQLi·SSRF), 민감 컬럼 AES-256 암호화</td></tr>
+                  <tr><td>접근성</td><td>WCAG 2.1 AA 기본 준수 (키보드 네비, 색 대비, ARIA 라벨)</td></tr>
+                  <tr><td>가용성</td><td>AWS Multi-AZ RDS, 일일 자동 백업 7일 보관</td></tr>
+                </tbody>
+              </table>
+
+              <h2>5. 기술 제약사항</h2>
+              <ul>
+                <li>프론트엔드: Next.js 14 App Router 기반 — SSR/SSG/ISR 혼합으로 SEO + 성능 동시 확보</li>
+                <li>백엔드: NestJS 모듈 기반 도메인 분리 — 향후 모듈 추가 시 영향 범위 최소화</li>
+                <li>데이터베이스: PostgreSQL 15 — JSONB·GIN 인덱스로 유연한 메타·검색 대응</li>
+                <li>인증: NextAuth.js (FE 세션) + JWT (BE 보호 라우트)</li>
+                <li>리치 에디터: Lexical (Notion 수준 표·이미지·임베드 지원)</li>
+                <li>인프라: AWS (EC2/ECS + RDS + S3 + CloudFront + Route53) — 또는 Vercel + Supabase 옵션 협의 가능</li>
+                <li>CI/CD: GitHub Actions (PR마다 lint/test/build, 메인 머지 시 자동 배포)</li>
+              </ul>
+
+              <h2>6. 범위 외 사항 (Out of Scope)</h2>
+              <ul>
+                <li>광고 관리 시스템(ADMS) 본 개발 — 본 범위에서는 확장 가능 아키텍처 설계까지만 포함</li>
+                <li>전문가/사용자 매칭 시스템 본 개발 — 동일하게 모듈 확장 지점 설계까지 포함</li>
+                <li>모바일 네이티브 앱 (반응형 웹으로 대응)</li>
+                <li>실시간 채팅·알림 푸시 서버 — 이메일 + 인앱 알림으로 시작</li>
+                <li>결제·과금 — 본 범위에 결제 시스템 미포함</li>
+                <li>콘텐츠 데이터 입력 작업 — CMS 제공, 데이터 입력은 클라이언트 담당</li>
+                <li>다국어(i18n) — 한국어 단일 우선, 구조만 i18n-ready로 설계</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+
+        <!-- TIMELINE -->
+        <div id="page-timeline" class="page-section space-y-6">
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <article class="doc-content">
+              <h1>일정 제안</h1>
+              <blockquote>총 90일 기준 단계별 마일스톤 및 산출물을 제안합니다.</blockquote>
+
+              <h2>전체 일정 요약</h2>
+              <table>
+                <thead>
+                  <tr><th>단계</th><th>기간</th><th>주요 산출물</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>Phase 1: 기획/설계</td><td>Day 1–9</td><td>PRD, 화면 흐름도, ERD, API 명세서, 권한 매트릭스</td></tr>
+                  <tr><td>Phase 2: UI/UX 디자인</td><td>Day 10–22</td><td>디자인 시스템, 사용자 화면 + 어드민 Figma (반응형 PC/MO)</td></tr>
+                  <tr><td>Phase 3: 프론트엔드 개발</td><td>Day 23–45</td><td>사용자 화면, 커뮤니티, 마이페이지, SEO 메타 자동 생성</td></tr>
+                  <tr><td>Phase 4: 백엔드 개발</td><td>Day 46–70</td><td>인증·RBAC·CMS·커뮤니티·어드민 API 전체</td></tr>
+                  <tr><td>Phase 5: 통합 + 어드민</td><td>Day 71–80</td><td>FE-BE 통합, 어드민 페이지 완성, 미디어 업로드</td></tr>
+                  <tr><td>Phase 6: QA/SEO/배포</td><td>Day 81–90</td><td>E2E 테스트, SEO 검증, AWS 배포, 운영 매뉴얼, SEO 보고서</td></tr>
+                </tbody>
+              </table>
+            </article>
+          </div>
+
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <h2 class="mb-4 text-sm font-semibold tracking-[0.14em] text-slate-500">상세 타임라인</h2>
+            <div class="timeline">
+              <div class="timeline-item">
+                <p class="text-sm font-semibold tracking-[0.14em] text-sky-700">PHASE 1</p>
+                <h4 class="text-base font-semibold text-slate-900">기획 및 설계</h4>
+                <p class="mb-1 text-sm font-semibold text-amber-600">Day 1–9</p>
+                <p class="text-sm leading-7 text-slate-600">노코드 프로토타입을 분석하여 화면 흐름과 데이터 모델을 도출하고, PRD·ERD·API 명세·권한 매트릭스를 정형화합니다.</p>
+                <ul class="mt-2 list-disc pl-5 text-sm text-slate-500">
+                  <li>산출물: PRD 확정본, 화면 흐름도, ERD, API 명세서, 권한 매트릭스</li>
+                  <li>검수: 클라이언트 PRD 승인 (M1)</li>
+                </ul>
+              </div>
+              <div class="timeline-item">
+                <p class="text-sm font-semibold tracking-[0.14em] text-sky-700">PHASE 2</p>
+                <h4 class="text-base font-semibold text-slate-900">UI/UX 디자인</h4>
+                <p class="mb-1 text-sm font-semibold text-amber-600">Day 10–22</p>
+                <p class="text-sm leading-7 text-slate-600">노코드 프로토타입의 시각적 구조를 계승한 디자인 시스템을 정의하고, 사용자 화면과 어드민 페이지를 반응형(PC/MO)으로 디자인합니다.</p>
+                <ul class="mt-2 list-disc pl-5 text-sm text-slate-500">
+                  <li>산출물: Figma 디자인 시스템, 사용자 화면 ~18화면, 어드민 ~12화면</li>
+                  <li>검수: 디자인 시안 승인 (M2)</li>
+                </ul>
+              </div>
+              <div class="timeline-item">
+                <p class="text-sm font-semibold tracking-[0.14em] text-sky-700">PHASE 3</p>
+                <h4 class="text-base font-semibold text-slate-900">프론트엔드 개발</h4>
+                <p class="mb-1 text-sm font-semibold text-amber-600">Day 23–45</p>
+                <p class="text-sm leading-7 text-slate-600">Next.js App Router 기반으로 사용자 화면을 SSR/SSG로 구현합니다. 카테고리 아카이브, 커뮤니티 게시판, 마이페이지를 포함하며 SEO 메타 자동 생성을 적용합니다.</p>
+                <ul class="mt-2 list-disc pl-5 text-sm text-slate-500">
+                  <li>산출물: 사용자 화면 전체 동작 가능한 빌드, 디자인 시스템 코드 라이브러리</li>
+                  <li>검수: 사용자 화면 데모 (M3)</li>
+                </ul>
+              </div>
+              <div class="timeline-item">
+                <p class="text-sm font-semibold tracking-[0.14em] text-sky-700">PHASE 4</p>
+                <h4 class="text-base font-semibold text-slate-900">백엔드 개발</h4>
+                <p class="mb-1 text-sm font-semibold text-amber-600">Day 46–70</p>
+                <p class="text-sm leading-7 text-slate-600">NestJS 모듈 기반으로 인증, RBAC, CMS, 커뮤니티, 어드민 API를 개발합니다. 카카오/네이버/구글 SSO와 활동 로그 시스템을 포함합니다.</p>
+                <ul class="mt-2 list-disc pl-5 text-sm text-slate-500">
+                  <li>산출물: API 전체 동작 가능한 빌드, OpenAPI(Swagger) 문서</li>
+                  <li>검수: API 통합 테스트 통과 (M4)</li>
+                </ul>
+              </div>
+              <div class="timeline-item">
+                <p class="text-sm font-semibold tracking-[0.14em] text-sky-700">PHASE 5</p>
+                <h4 class="text-base font-semibold text-slate-900">통합 + 어드민</h4>
+                <p class="mb-1 text-sm font-semibold text-amber-600">Day 71–80</p>
+                <p class="text-sm leading-7 text-slate-600">FE-BE를 연결하여 전 기능 동작을 확인하고, 어드민 페이지(대시보드·CMS·회원/게시물 관리)를 완성합니다. S3 미디어 업로드를 통합합니다.</p>
+                <ul class="mt-2 list-disc pl-5 text-sm text-slate-500">
+                  <li>산출물: 통합 빌드, 어드민 페이지 완성본</li>
+                  <li>검수: 어드민 시연 + 콘텐츠 업로드 테스트 (M5)</li>
+                </ul>
+              </div>
+              <div class="timeline-item">
+                <p class="text-sm font-semibold tracking-[0.14em] text-sky-700">PHASE 6</p>
+                <h4 class="text-base font-semibold text-slate-900">QA / SEO 검증 / 배포</h4>
+                <p class="mb-1 text-sm font-semibold text-amber-600">Day 81–90</p>
+                <p class="text-sm leading-7 text-slate-600">E2E 테스트, SEO 검증, 보안 점검, 성능 튜닝을 진행합니다. AWS 운영 환경에 배포하고 운영 매뉴얼·SEO 보고서를 인계합니다.</p>
+                <ul class="mt-2 list-disc pl-5 text-sm text-slate-500">
+                  <li>산출물: 운영 환경 배포본, 운영 매뉴얼, SEO 최적화 보고서, 소스 코드 이관</li>
+                  <li>검수: 최종 인수 (M6)</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <article class="doc-content">
+              <h2>마일스톤 체크포인트</h2>
+              <table>
+                <thead>
+                  <tr><th>마일스톤</th><th>시점</th><th>검수 기준</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>M1: 기획 완료</td><td>Day 9</td><td>PRD·ERD·API 명세서 승인</td></tr>
+                  <tr><td>M2: 디자인 완료</td><td>Day 22</td><td>Figma 사용자/어드민 화면 승인</td></tr>
+                  <tr><td>M3: FE 데모</td><td>Day 45</td><td>사용자 화면 동작 확인 (목 데이터)</td></tr>
+                  <tr><td>M4: BE 완료</td><td>Day 70</td><td>API 전체 통합 테스트 통과</td></tr>
+                  <tr><td>M5: 어드민 시연</td><td>Day 80</td><td>관리자 콘텐츠 업로드 + 회원·게시물 관리 시연</td></tr>
+                  <tr><td>M6: 최종 인수</td><td>Day 90</td><td>운영 배포 + 산출물 일체 인계</td></tr>
+                </tbody>
+              </table>
+
+              <h2>커뮤니케이션 계획</h2>
+              <table>
+                <tr><th>항목</th><th>방식</th><th>주기</th></tr>
+                <tr><td>일일 진행 공유</td><td>Slack / 카카오톡</td><td>매일</td></tr>
+                <tr><td>주간 미팅</td><td>Zoom / Google Meet</td><td>주 1회 (정기)</td></tr>
+                <tr><td>마일스톤 리뷰</td><td>화면 공유 + 문서 발송</td><td>단계 완료 시</td></tr>
+                <tr><td>이슈 트래킹</td><td>GitHub Issues</td><td>상시</td></tr>
+                <tr><td>문서 공유</td><td>Notion 또는 Google Docs</td><td>상시</td></tr>
+              </table>
+            </article>
+          </div>
+        </div>
+
+        <!-- PORTFOLIO -->
+        <div id="page-portfolio" class="page-section space-y-6">
+          <div class="rounded-2xl border border-slate-200/70 bg-white/95 p-5 shadow-soft backdrop-blur md:p-8">
+            <article class="doc-content">
+              <h1>유사 프로젝트 경험</h1>
+              <blockquote>본 프로젝트와 유사한 기능/기술 스택을 활용한 수행 경험을 소개합니다.</blockquote>
+            </article>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4 md:grid-cols-4">
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
+              <p class="text-2xl font-bold text-sky-700">13+</p>
+              <p class="mt-1 text-sm text-slate-500">완료 프로젝트</p>
+            </div>
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
+              <p class="text-2xl font-bold text-sky-700">80+</p>
+              <p class="mt-1 text-sm text-slate-500">DB 엔티티 경험</p>
+            </div>
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
+              <p class="text-2xl font-bold text-sky-700">200+</p>
+              <p class="mt-1 text-sm text-slate-500">API 엔드포인트</p>
+            </div>
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-4 text-center shadow-soft backdrop-blur">
+              <p class="text-2xl font-bold text-sky-700">7+</p>
+              <p class="mt-1 text-sm text-slate-500">RBAC 역할 모델링</p>
+            </div>
+          </div>
+
+          <div class="space-y-4">
+
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft backdrop-blur md:p-8">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-sky-100 text-sky-700 border-sky-200">B2B SaaS · 어드민 · RBAC</div>
+              <h3 class="text-lg font-semibold tracking-tight text-slate-900">EZ-Approve — 전자결재 SaaS</h3>
+              <p class="mt-1 text-sm text-slate-400">기업용 전자결재·관리자 포탈 · 2026.01–2026.03</p>
+              <div class="mt-3 doc-content">
+                <h4>프로젝트 개요</h4>
+                <p>다단계 전자결재 엔진과 강력한 어드민·CMS 기능을 갖춘 B2B SaaS. PR 504건, 50+ 페이지, 120-150 API 엔드포인트, 34 엔티티, 7 사용자 역할, 6계층 보안 체계를 구축했습니다.</p>
+                <h4>핵심 기능</h4>
+                <ul>
+                  <li>다단계 전자결재 엔진 (8종 결재 액션)</li>
+                  <li>Lexical 리치 에디터 (170 파일, 26 커스텀 노드)</li>
+                  <li>실시간 공동 편집 (CRDT/Yjs)</li>
+                  <li>RBAC + CASL 기반 7 역할 권한 매트릭스</li>
+                  <li>관리자 대시보드 + 회원·콘텐츠 관리</li>
+                  <li>토큰 기반 외부 셀프서비스 포탈</li>
+                </ul>
+                <h4>본 프로젝트와의 유사점</h4>
+                <ul>
+                  <li><strong>관리자 페이지 + DB 대시보드</strong> — 본 프로젝트의 어드민 페이지(회원·게시물·DB 대시보드)와 거의 동일한 패턴</li>
+                  <li><strong>RBAC 권한별 접근 제어</strong> — "사용자 권한별 게시판" 요구사항을 CASL 미들웨어로 선언적으로 구현 가능</li>
+                  <li><strong>리치 에디터 기반 콘텐츠 작성</strong> — CMS 정책·가이드라인 콘텐츠 작성 UX에 그대로 활용</li>
+                  <li><strong>다국어·역할별 라벨링</strong> — i18n-ready 구조 검증 완료</li>
+                </ul>
+                <h4>기술 스택</h4>
+                <div class="flex flex-wrap gap-1.5 not-prose">
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">NestJS 10</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Next.js 13</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">TypeScript</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">MySQL 8</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Lexical + Yjs</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">CASL</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">MUI v5</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Docker</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft backdrop-blur md:p-8">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-sky-100 text-sky-700 border-sky-200">대규모 콘텐츠 · 회원 시스템 · 포탈</div>
+              <h3 class="text-lg font-semibold tracking-tight text-slate-900">Series-B — VC 펀드 관리 플랫폼</h3>
+              <p class="mt-1 text-sm text-slate-400">VC 펀드 라이프사이클 통합 포탈 · 2023.11–2024.12</p>
+              <div class="mt-3 doc-content">
+                <h4>프로젝트 개요</h4>
+                <p>GP/LP/스타트업 3종 사용자 그룹별 차별화된 포탈을 제공하는 VC 펀드 관리 플랫폼. PR 1,652건, 50+ 페이지, 22 도메인 모듈, 80+ 엔티티, 200-300+ API 엔드포인트를 운영합니다.</p>
+                <h4>핵심 기능</h4>
+                <ul>
+                  <li>VC 펀드 라이프사이클 관리 (GP/LP/스타트업 권한별 포탈)</li>
+                  <li>AI 투자 보고서 자동 생성 (ChatGPT 연동)</li>
+                  <li>Lexical + CRDT 실시간 공동편집</li>
+                  <li>5계층 보안 + DLP + GeoIP 차단</li>
+                  <li>VICS 규제 5종 양식 자동화</li>
+                  <li>다단계 결재 워크플로우</li>
+                </ul>
+                <h4>본 프로젝트와의 유사점</h4>
+                <ul>
+                  <li><strong>대규모 콘텐츠 관리 시스템</strong> — 80+ 엔티티 / 200+ API 운영 경험으로 본 프로젝트 CMS 규모 대응 검증 완료</li>
+                  <li><strong>권한별 사용자 그룹 분리</strong> — "사용자 권한별 게시판"과 동일한 다중 사용자 그룹 패턴</li>
+                  <li><strong>회원 시스템 + 활동 로그</strong> — 마이페이지·활동 로그·북마크 패턴을 동일 구조로 보유</li>
+                  <li><strong>고도 보안 요구사항</strong> — 민감 정보 처리 경험 (KYC + 다층 보안)</li>
+                </ul>
+                <h4>기술 스택</h4>
+                <div class="flex flex-wrap gap-1.5 not-prose">
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Next.js 13</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">NestJS 10</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">MySQL</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Lexical</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Yjs</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">AWS</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="rounded-2xl border border-slate-200/70 bg-white/90 p-5 shadow-soft backdrop-blur md:p-8">
+              <div class="mb-3 inline-flex rounded-full border px-2.5 py-1 text-sm font-semibold tracking-[0.12em] bg-sky-100 text-sky-700 border-sky-200">멀티테넌트 · 반응형 · 권한 관리</div>
+              <h3 class="text-lg font-semibold tracking-tight text-slate-900">Harmony Link — 시니어 주간보호 관리 플랫폼</h3>
+              <p class="mt-1 text-sm text-slate-400">B2B SaaS / 헬스케어 / 멀티테넌트 · 2025</p>
+              <div class="mt-3 doc-content">
+                <h4>프로젝트 개요</h4>
+                <p>시설별 권한 분리(멀티테넌트)와 반응형 웹+모바일을 동시에 지원하는 시니어 케어 통합 관리 플랫폼. 133K+ LOC, 140+ API 엔드포인트, 6 플랫폼을 운영합니다.</p>
+                <h4>핵심 기능</h4>
+                <ul>
+                  <li>시설별 권한 분리 (멀티테넌트 아키텍처)</li>
+                  <li>케어 로그·투약·건강 관리</li>
+                  <li>AI 건강 분석 (OpenAI 연동)</li>
+                  <li>전자서명 + 보호자 커뮤니케이션</li>
+                  <li>반응형 웹 + Flutter 모바일</li>
+                </ul>
+                <h4>본 프로젝트와의 유사점</h4>
+                <ul>
+                  <li><strong>다중 권한 그룹 관리</strong> — 시설·역할 단위 권한 분리 패턴이 "권한 그룹별 게시판"과 동일</li>
+                  <li><strong>반응형 웹 + 어드민 분리</strong> — 사용자 화면과 관리자 화면을 동일 BE에서 분리 서빙하는 패턴</li>
+                  <li><strong>알림 시스템</strong> — 인앱 + 이메일 통합 알림 패턴 보유</li>
+                  <li><strong>AWS 인프라</strong> — AWS CDK 기반 IaC로 안정적 배포 구성</li>
+                </ul>
+                <h4>기술 스택</h4>
+                <div class="flex flex-wrap gap-1.5 not-prose">
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">NestJS</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Next.js</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">TypeScript</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">MySQL</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">AWS CDK</span>
+                  <span class="rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-sm text-slate-500">Docker</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="rounded-2xl border border-sky-200/70 bg-gradient-to-br from-sky-50 to-brand-50 p-6 text-center shadow-soft md:p-10">
+            <h2 class="text-xl font-bold tracking-tight text-slate-900 md:text-2xl">함께 만들어 가겠습니다</h2>
+            <p class="mx-auto mt-3 max-w-lg text-sm leading-7 text-slate-600">프로젝트에 대해 더 자세한 논의를 원하시면 미팅을 신청해 주세요.</p>
+          </div>
+        </div>
+
+        <div id="page-nav" class="mt-6 flex items-center justify-between gap-4" style="display:none;">
+          <a id="nav-prev" href="#home"
+             class="group flex items-center gap-2 rounded-2xl border border-slate-200/70 bg-white/90 px-5 py-3 shadow-soft backdrop-blur transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white">
+            <svg class="w-5 h-5 text-slate-400 transition group-hover:text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+            <span>
+              <span class="block text-xs text-slate-400">이전</span>
+              <span id="nav-prev-label" class="block text-sm font-semibold text-slate-700 group-hover:text-sky-700">홈</span>
+            </span>
+          </a>
+          <a id="nav-next" href="#overview"
+             class="group flex items-center gap-2 rounded-2xl border border-slate-200/70 bg-white/90 px-5 py-3 shadow-soft backdrop-blur transition hover:-translate-y-0.5 hover:border-sky-200 hover:bg-white text-right ml-auto">
+            <span>
+              <span class="block text-xs text-slate-400">다음</span>
+              <span id="nav-next-label" class="block text-sm font-semibold text-slate-700 group-hover:text-sky-700">프로젝트 소개</span>
+            </span>
+            <svg class="w-5 h-5 text-slate-400 transition group-hover:text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+
+      </main>
+    </div>
+
+    <footer class="mt-10 border-t border-slate-200 pt-6 text-xs text-slate-500">
+      &copy; 2026 &middot; 본 제안서는 노코드 프로토타입 기반 정보 아카이브 및 커뮤니티 웹 플랫폼 프로젝트를 위해 작성되었습니다.
+    </footer>
+  </div>
+
+  <script>
+    const pages = ['home', 'overview', 'estimate', 'manday', 'prd', 'timeline', 'portfolio'];
+    const pageLabels = {
+      home: '홈', overview: '프로젝트 소개', estimate: '견적서',
+      manday: '공수계산서', prd: 'PRD', timeline: '일정 제안', portfolio: '유사 프로젝트 경험'
+    };
+
+    function navigate(pageId) {
+      if (!pages.includes(pageId)) pageId = 'home';
+      document.querySelectorAll('.page-section').forEach(el => el.classList.remove('active'));
+      const target = document.getElementById('page-' + pageId);
+      if (target) target.classList.add('active');
+      document.querySelectorAll('.nav-link').forEach(link => {
+        if (link.dataset.page === pageId) {
+          link.className = 'nav-link block rounded-xl border px-3 py-2 text-sm border-sky-200 bg-sky-50 font-medium text-sky-700';
+        } else {
+          link.className = 'nav-link block rounded-xl border border-transparent px-3 py-2 text-sm text-slate-600 hover:border-slate-200 hover:bg-slate-50 hover:text-slate-900';
+        }
+      });
+      updatePageNav(pageId);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      closeSidebar();
+    }
+
+    function updatePageNav(pageId) {
+      const nav = document.getElementById('page-nav');
+      const idx = pages.indexOf(pageId);
+      const prevBtn = document.getElementById('nav-prev');
+      const nextBtn = document.getElementById('nav-next');
+      const prevLabel = document.getElementById('nav-prev-label');
+      const nextLabel = document.getElementById('nav-next-label');
+
+      nav.style.display = (pageId === 'home') ? 'none' : 'flex';
+
+      if (idx > 0) {
+        prevBtn.href = '#' + pages[idx - 1];
+        prevLabel.textContent = pageLabels[pages[idx - 1]];
+        prevBtn.style.visibility = 'visible';
+      } else {
+        prevBtn.style.visibility = 'hidden';
+      }
+
+      if (idx < pages.length - 1) {
+        nextBtn.href = '#' + pages[idx + 1];
+        nextLabel.textContent = pageLabels[pages[idx + 1]];
+        nextBtn.style.visibility = 'visible';
+      } else {
+        nextBtn.style.visibility = 'hidden';
+      }
+    }
+
+    function closeSidebar() {
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('sidebar-backdrop').classList.remove('open');
+    }
+
+    function handleHash() {
+      const hash = (location.hash || '#home').replace('#', '');
+      navigate(hash);
+    }
+    window.addEventListener('hashchange', handleHash);
+    window.addEventListener('DOMContentLoaded', handleHash);
+
+    document.getElementById('sidebar-toggle').addEventListener('click', function() {
+      document.getElementById('sidebar').classList.toggle('open');
+      document.getElementById('sidebar-backdrop').classList.toggle('open');
+    });
+  </script>
+</body>
+</html>
